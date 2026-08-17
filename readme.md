@@ -3,7 +3,9 @@
 
 VELAR is a real-time computer vision application for hand detection, tracking, and gesture recognition using a webcam.
 
-The application uses MediaPipe Hand Landmarker to perform real-time hand tracking directly in the browser.
+The application uses **MediaPipe Hand Landmarker** for real-time hand tracking directly in the browser. A lightweight **FastAPI backend** is included for session management and detection-event telemetry.
+
+---
 
 ## Features
 
@@ -14,78 +16,156 @@ The application uses MediaPipe Hand Landmarker to perform real-time hand trackin
 - Bounding-box visualization
 - Gesture recognition
 - Handedness detection
-- Detection confidence
+- Confidence display
 - Real-time FPS monitoring
 - Inference-time monitoring
 - Start/stop camera controls
 - Browser-based video recording
 - Configurable visualization controls
-- Responsive dark interface
+- Responsive dark-themed interface
+- Lightweight FastAPI backend
+- Session creation API
+- Detection-event telemetry API
+- Backend health-check endpoint
 
-## Tech Stack
+---
 
-### Computer Vision
+# Technology Stack
 
-- MediaPipe Tasks Vision
-- MediaPipe Hand Landmarker
-
-### Frontend
+## Frontend
 
 - React
 - JavaScript
 - Vite
 - Tailwind CSS
+- MediaPipe Tasks Vision
+- MediaPipe Hand Landmarker
 - Lucide React
+- Browser MediaRecorder API
 
-### Backend
+## Backend
 
 - Python
-- Flask/FastAPI
+- FastAPI
+- Uvicorn
+- Pydantic
 
-## Requirements
+## Computer Vision
 
-Before running the application, install:
+- MediaPipe Hand Landmarker
+- Real-time hand landmark detection
+- Hand tracking
+- Handedness classification
+- Custom landmark-based gesture recognition
 
-- Node.js
-- npm
-- Python 3.x
-- A modern web browser
-- Webcam/camera access
+---
 
-Recommended browsers:
-
-- Google Chrome
-- Microsoft Edge
-
-## Project Structure
+# Project Structure
 
 ```text
-dheera/
+VELAR/
 │
 ├── backend/
+│   ├── .env
+│   ├── app/
+│   │   ├── __pycache__/
+│   │   └── main.py
+│   └── requirements.txt
 │
 ├── frontend/
 │   ├── src/
+│   │   ├── components/
 │   │   ├── hooks/
+│   │   │   └── useHandTracking.js
 │   │   ├── lib/
+│   │   │   └── gestureRecognition.js
 │   │   ├── App.jsx
+│   │   ├── main.jsx
 │   │   └── styles.css
 │   │
+│   ├── .env.example
+│   ├── index.html
 │   ├── package.json
-│   └── package-lock.json
+│   ├── package-lock.json
+│   └── vite.config.js
 │
-└── README.md
+├── .gitignore
+└── readme.md
 ````
 
-## Frontend Setup
+---
 
-Open a terminal in the project directory:
+# Requirements
+
+Before running VELAR, make sure the following are installed:
+
+* Node.js 18 or newer
+* npm
+* Python 3.x
+* pip
+* Git
+* A modern web browser
+* A working webcam
+
+Recommended browsers:
+
+* Google Chrome
+* Microsoft Edge
+
+You can verify Node.js and npm with:
+
+```bash
+node --version
+npm --version
+```
+
+Verify Python with:
+
+```bash
+python --version
+```
+
+Verify pip with:
+
+```bash
+pip --version
+```
+
+---
+
+# Installation
+
+## 1. Clone the Repository
+
+Clone the GitHub repository:
+
+```bash
+git clone https://github.com/manjakkadan/VELAR.git
+```
+
+Move into the project directory:
+
+```bash
+cd VELAR
+```
+
+---
+
+# Frontend Setup
+
+The frontend contains the main VELAR user interface and real-time MediaPipe hand tracking.
+
+## 1. Open the Frontend Directory
+
+From the project root:
 
 ```bash
 cd frontend
 ```
 
-Install the dependencies:
+## 2. Install Dependencies
+
+Run:
 
 ```bash
 npm install
@@ -97,80 +177,494 @@ The project uses:
 @mediapipe/tasks-vision@0.10.21
 ```
 
-If required:
+If npm reports a MediaPipe package-version error, install the compatible version explicitly:
 
 ```bash
 npm install @mediapipe/tasks-vision@0.10.21
 ```
 
-## Run the Application
+## 3. Start the Frontend
 
-From the `frontend` directory:
+Run:
 
 ```bash
 npm run dev
 ```
 
-Open the local URL shown by Vite, usually:
+Vite will start the development server.
+
+The terminal will display a URL similar to:
+
+```text
+http://localhost:5173/
+```
+
+Open the displayed URL in Chrome or Microsoft Edge.
+
+---
+
+# Backend Setup
+
+VELAR includes a lightweight **FastAPI** backend.
+
+The backend provides:
+
+* API health checking
+* Session creation
+* Detection-event telemetry
+
+The real-time MediaPipe inference runs directly in the browser and does not depend on the backend for the video-processing loop.
+
+## 1. Open the Backend Directory
+
+From the project root:
+
+```bash
+cd backend
+```
+
+## 2. Create a Python Virtual Environment
+
+On Windows:
+
+```powershell
+python -m venv .venv
+```
+
+Activate the environment:
+
+```powershell
+.venv\Scripts\activate
+```
+
+After activation, the terminal should show something similar to:
+
+```text
+(.venv) PS C:\Users\<username>\Desktop\VELAR\backend>
+```
+
+## 3. Install Backend Dependencies
+
+Run:
+
+```powershell
+pip install -r requirements.txt
+```
+
+## 4. Start the FastAPI Server
+
+From the `backend` directory:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+The backend will be available at:
+
+```text
+http://127.0.0.1:8000
+```
+
+---
+
+# Running Frontend and Backend Together
+
+For full development, run the frontend and backend in **two separate terminals**.
+
+## Terminal 1 — Backend
+
+From the project root:
+
+```powershell
+cd backend
+.venv\Scripts\activate
+uvicorn app.main:app --reload
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+## Terminal 2 — Frontend
+
+From the project root:
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+Frontend:
 
 ```text
 http://localhost:5173
 ```
 
-Allow camera access when prompted.
+Open the frontend URL in your browser.
 
-Click **Start Camera** to begin hand detection.
+---
 
-## How It Works
+# Camera Setup
 
-The webcam provides a live video stream to the browser.
+When VELAR is opened for the first time, the browser may ask for camera permission.
 
-MediaPipe Hand Landmarker processes the video frames and detects hand landmarks.
+Select:
 
-The detected landmarks are used to:
+```text
+Allow
+```
 
-1. Track the hand
-2. Determine handedness
-3. Calculate hand boundaries
-4. Recognize predefined gestures
-5. Draw landmarks
-6. Draw the hand skeleton
-7. Display bounding boxes
-8. Display gesture labels
-9. Calculate confidence
-10. Monitor real-time performance
+Then click:
 
-## Gesture Recognition
+```text
+Start Camera
+```
 
-Gesture recognition is implemented using the detected hand landmarks.
+The webcam stream will appear in the application.
 
-The landmark relationships are analyzed to identify predefined hand gestures.
+If camera permission was previously denied:
 
-The detected gesture is displayed in the interface together with the hand tracking information.
+1. Open the browser's site settings.
+2. Find the Camera permission.
+3. Change it to **Allow**.
+4. Refresh the VELAR page.
+5. Click **Start Camera** again.
 
-## Recording
+---
 
-VELAR uses the browser's MediaRecorder API for video recording.
+# Using VELAR
 
-When recording is stopped, the captured video is generated as a WebM file and downloaded locally.
+## Start Camera
 
-## AI Tools Used
+Starts the webcam and MediaPipe hand-tracking pipeline.
 
-### MediaPipe Hand Landmarker
+## Stop Camera
 
-MediaPipe Hand Landmarker is the primary computer-vision/AI component.
+Stops the webcam stream and MediaPipe processing.
+
+## Hand Detection
+
+When a hand is visible in the camera frame, VELAR detects and tracks it in real time.
+
+The interface displays:
+
+* Number of detected hands
+* Handedness
+* Gesture
+* Confidence
+* FPS
+* Inference time
+
+## Landmarks
+
+Shows or hides the detected hand landmarks.
+
+MediaPipe provides 21 landmarks for each detected hand.
+
+## Skeleton
+
+Shows or hides the connections between the hand landmarks.
+
+## Bounding Box
+
+Shows or hides the bounding box around the detected hand.
+
+## Labels
+
+Shows or hides information displayed over the detected hand.
+
+## Record
+
+Starts browser-based video recording using the browser's `MediaRecorder` API.
+
+## Stop Recording
+
+Stops the recording and generates the captured video as a local WebM file.
+
+---
+
+# Gesture Recognition
+
+VELAR uses the detected MediaPipe hand landmarks as the input for gesture recognition.
+
+The application analyzes the spatial relationships between hand landmarks to identify predefined gestures.
+
+The detected gesture is displayed in the interface together with the corresponding hand information.
+
+---
+
+# Performance Monitoring
+
+VELAR displays real-time performance information including:
+
+### FPS
+
+The approximate number of processed frames per second.
+
+### Inference
+
+The time taken by the MediaPipe inference operation for a processed frame.
+
+### Confidence
+
+The confidence value associated with the detected hand classification.
+
+These metrics provide feedback about the real-time performance of the application.
+
+---
+
+# How the System Works
+
+The processing pipeline is approximately:
+
+```text
+Webcam
+   │
+   ▼
+Browser Video Stream
+   │
+   ▼
+MediaPipe Hand Landmarker
+   │
+   ▼
+21 Hand Landmarks
+   │
+   ├── Handedness
+   │
+   ├── Gesture Recognition
+   │
+   ├── Bounding Box
+   │
+   ├── Skeleton
+   │
+   └── Confidence
+   │
+   ▼
+VELAR User Interface
+```
+
+The backend operates separately for lightweight API functionality:
+
+```text
+VELAR Frontend
+      │
+      ├── Session API
+      │
+      └── Detection Telemetry
+             │
+             ▼
+       FastAPI Backend
+```
+
+The real-time camera and MediaPipe inference pipeline is designed to continue working without making video inference dependent on the backend.
+
+---
+
+# Backend API
+
+The FastAPI backend exposes the following endpoints.
+
+## Health Check
+
+```http
+GET /api/health
+```
+
+Example response:
+
+```json
+{
+  "status": "ok",
+  "service": "hand-api",
+  "time": "2026-..."
+}
+```
+
+This endpoint can be used to verify that the backend is running.
+
+---
+
+## Create Session
+
+```http
+POST /api/sessions
+```
+
+Creates a unique session ID for a web client.
+
+Example response:
+
+```json
+{
+  "session_id": "generated-uuid",
+  "created_at": "2026-..."
+}
+```
+
+---
+
+## Record Detection Event
+
+```http
+POST /api/events
+```
+
+Accepts detection telemetry containing:
+
+* Session ID
+* Hand
+* Gesture
+* Confidence
+* Timestamp
+
+Example structure:
+
+```json
+{
+  "session_id": "example-session",
+  "hand": "Right",
+  "gesture": "Open Palm",
+  "confidence": 0.92,
+  "timestamp": 1234567890
+}
+```
+
+The endpoint accepts the event without making real-time video inference dependent on the backend.
+
+---
+
+# API Documentation
+
+FastAPI automatically provides interactive API documentation.
+
+After starting the backend, open:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+This provides an interactive interface for testing the available API endpoints.
+
+---
+
+# Troubleshooting
+
+## `npm` is not recognized
+
+Install Node.js and restart the terminal.
+
+Verify:
+
+```bash
+node --version
+npm --version
+```
+
+---
+
+## `python` is not recognized
+
+Install Python 3.x and make sure Python is added to PATH.
+
+Verify:
+
+```bash
+python --version
+```
+
+---
+
+## MediaPipe Package Installation Error
+
+If npm reports that a MediaPipe version cannot be found, run:
+
+```bash
+npm install @mediapipe/tasks-vision@0.10.21
+```
+
+---
+
+## Camera Is Not Showing
+
+Check that:
+
+* A webcam is connected.
+* Browser camera permission is enabled.
+* Another application is not currently using the webcam.
+* Chrome or Edge has permission to access the camera.
+* The VELAR page has been refreshed after changing permissions.
+
+---
+
+## Hand Is Not Detected
+
+Try the following:
+
+* Move the hand closer to the camera.
+* Make sure the hand is fully visible.
+* Improve the lighting.
+* Keep the hand inside the camera frame.
+* Make sure the camera is running.
+* Refresh the page and start the camera again.
+
+---
+
+## Backend Does Not Start
+
+Make sure the virtual environment is activated:
+
+```powershell
+.venv\Scripts\activate
+```
+
+Then install the dependencies again:
+
+```powershell
+pip install -r requirements.txt
+```
+
+Start the server:
+
+```powershell
+uvicorn app.main:app --reload
+```
+
+---
+
+## Port Already in Use
+
+If port `8000` is already being used, run FastAPI on another port:
+
+```powershell
+uvicorn app.main:app --reload --port 8001
+```
+
+For the frontend, Vite can similarly use another available port.
+
+---
+
+# AI Tools Used
+
+## MediaPipe Hand Landmarker
+
+MediaPipe Hand Landmarker is the primary computer-vision component used by VELAR.
 
 It provides:
 
 * Hand detection
-* Hand landmarks
+* 21 hand landmarks
 * Hand tracking
 * Handedness classification
 * Real-time inference
 
-### AI-Assisted Development
+The MediaPipe model runs as part of the browser-based frontend.
 
-AI tools were used during development to assist with:
+## AI-Assisted Development
+
+AI tools were used as development assistants during implementation for:
 
 * React application structure
 * UI development
@@ -182,58 +676,100 @@ AI tools were used during development to assist with:
 * Error handling
 * Documentation
 
-The generated code was tested and modified during implementation.
+The generated suggestions were tested, integrated, and modified during development.
 
-## Challenges Faced
+---
 
-### MediaPipe Package Compatibility
+# Challenges Faced
 
-The initial MediaPipe package version caused an npm package-resolution error.
+## 1. MediaPipe Package Compatibility
 
-The compatible version used during development was:
+The initial MediaPipe package version used by the project caused an npm package-resolution error because the requested version was unavailable.
+
+The compatible version used in the final implementation is:
 
 ```text
 @mediapipe/tasks-vision@0.10.21
 ```
 
-### Camera Initialization
+This version is explicitly used by the application.
 
-The application required handling browser camera permissions and correctly connecting the webcam stream to the video element.
+---
 
-### Hand Landmark Processing
+## 2. Camera Initialization
 
-MediaPipe result structures required careful handling when processing multiple detected hands and their landmarks.
+The application needed to correctly request browser camera access and connect the webcam stream to the video element.
 
-### Mirrored Camera Display
+Camera permission handling and initialization errors were handled in the frontend.
 
-Front-facing cameras commonly display a mirrored image.
+---
 
-The video and canvas visualization were adjusted so that the hand visualization remains aligned with the displayed camera feed.
+## 3. Hand Landmark Processing
 
-### GPU Compatibility
+MediaPipe returns structured landmark and handedness data for each detected hand.
 
-The application attempts to use GPU acceleration for MediaPipe inference and falls back to CPU processing when GPU initialization is unavailable.
+The application processes these results to:
 
-## Privacy
+* Identify individual hands
+* Determine handedness
+* Calculate boundaries
+* Recognize gestures
+* Draw landmarks
+* Draw skeleton connections
+* Display detection information
 
-Camera processing is performed locally in the browser.
+---
 
-The webcam stream does not need to be uploaded to an external service for hand detection.
+## 4. Mirrored Camera Display
 
-Recordings are also generated locally using the browser's MediaRecorder API.
+Front-facing webcams commonly display a mirrored image.
 
-## Author
+The video and canvas rendering were adjusted so that the visualization remains aligned with the displayed camera feed.
 
-### Sayanth Paul Tom
+---
 
-GitHub: [https://github.com/manjakkadan](https://github.com/manjakkadan)
+## 5. GPU Compatibility
 
-LinkedIn: [https://www.linkedin.com/in/sayanthpaultom/](https://www.linkedin.com/in/sayanthpaultom/)
+The application attempts to initialize MediaPipe using GPU acceleration.
 
-Instagram: [https://www.instagram.com/sayanthpaultom/](https://www.instagram.com/sayanthpaultom/)
+If GPU initialization is unavailable, the application falls back to CPU processing.
 
-## Submission
+This provides a more robust experience across different systems.
 
-This project was developed as part of the Dheera technical assignment.
+---
 
-```
+## 6. Real-Time Performance
+
+Real-time hand tracking requires processing camera frames continuously.
+
+The application uses `requestAnimationFrame` and controls the processing frequency to maintain responsive performance while monitoring FPS and inference time.
+
+---
+
+# Privacy
+
+Camera processing for hand detection is performed locally in the browser.
+
+The webcam stream does not need to be uploaded to an external service for MediaPipe hand detection.
+
+Recordings are generated locally using the browser's `MediaRecorder` API.
+
+---
+
+# Author
+
+## Sayanth Paul Tom
+
+GitHub:
+
+[https://github.com/manjakkadan](https://github.com/manjakkadan)
+
+LinkedIn:
+
+[https://www.linkedin.com/in/sayanthpaultom/](https://www.linkedin.com/in/sayanthpaultom/)
+
+Instagram:
+
+[https://www.instagram.com/sayanthpaultom/](https://www.instagram.com/sayanthpaultom/)
+
+---
