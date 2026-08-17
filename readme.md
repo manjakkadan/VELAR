@@ -28,7 +28,6 @@ The application uses MediaPipe Hand Landmarker to perform real-time hand trackin
 
 - MediaPipe Tasks Vision
 - MediaPipe Hand Landmarker
-- OpenCV / computer vision concepts
 
 ### Frontend
 
