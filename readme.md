@@ -755,6 +755,15 @@ The webcam stream does not need to be uploaded to an external service for MediaP
 Recordings are generated locally using the browser's `MediaRecorder` API.
 
 ---
+## Demo Video
+
+A short demonstration of VELAR showing real-time hand detection,
+gesture recognition, visualization controls, performance metrics,
+and recording.
+
+The Demo Video Link: (https://drive.google.com/file/d/1AHYcHB7hBYXYJ_D0wDR4SaRY22AOKlWr/view?usp=sharing)
+
+---
 
 # Author
 
