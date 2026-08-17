@@ -1,0 +1,1414 @@
+@import "tailwindcss";
+
+:root {
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "SF Pro Display",
+    "Segoe UI",
+    sans-serif;
+
+  color: #f5f5f7;
+  background: #08090a;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #08090a;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
+.app-shell {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 50% -20%,
+      #17191c 0%,
+      #08090a 42%
+    );
+
+  padding: 0 34px;
+
+  letter-spacing: -0.01em;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.topbar {
+  position: relative;
+
+  height: 84px;
+
+  max-width: 1440px;
+
+  margin: auto;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border-bottom: 1px solid #202124;
+}
+
+
+/* =========================================================
+   LEFT — BOLD VELAR LOGO
+   ========================================================= */
+
+.brand-mark {
+  position: absolute;
+
+  left: 0;
+
+  top: 50%;
+
+  transform:
+    translateY(-50%);
+
+  width: 50px;
+
+  height: 50px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #f5f5f7;
+
+  cursor: default;
+
+  transition:
+    transform 0.25s ease,
+    filter 0.25s ease;
+}
+
+.brand-mark svg {
+  width: 100%;
+
+  height: 100%;
+
+  display: block;
+}
+
+.brand-mark:hover {
+  transform:
+    translateY(-50%)
+    scale(1.08);
+
+  filter:
+    drop-shadow(
+      0 0 13px
+      rgba(255, 255, 255, 0.28)
+    );
+}
+
+
+/* =========================================================
+   CENTER BRAND
+   ========================================================= */
+
+.brand {
+  position: absolute;
+
+  left: 50%;
+
+  top: 50%;
+
+  transform:
+    translate(-50%, -50%);
+
+  display: flex;
+
+  align-items: baseline;
+
+  justify-content: center;
+
+  gap: 14px;
+
+  white-space: nowrap;
+}
+
+.brand span {
+  font-size: 27px;
+
+  font-weight: 750;
+
+  letter-spacing: -0.055em;
+
+  line-height: 1;
+
+  color: #f5f5f7;
+}
+
+.brand small {
+  font-size: 9px;
+
+  letter-spacing: 0.18em;
+
+  color: #777a81;
+}
+
+
+/* =========================================================
+   HEADER RIGHT
+   ========================================================= */
+
+.header-right {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 20px;
+}
+
+.header-author {
+  color: #f0f0f2;
+
+  font-size: 13px;
+
+  font-weight: 700;
+
+  letter-spacing: -0.01em;
+}
+
+.header-socials {
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+}
+
+.header-social-link {
+  width: 32px;
+
+  height: 32px;
+
+  display: grid;
+
+  place-items: center;
+
+  color: #72757b;
+
+  text-decoration: none;
+
+  border:
+    1px solid
+    transparent;
+
+  border-radius: 8px;
+
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.header-social-link:hover {
+  color: #f5f5f7;
+
+  background: #151619;
+
+  border-color: #292b2f;
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   LIVE STATUS
+   ========================================================= */
+
+.status {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #85878d;
+
+  font-size: 12px;
+}
+
+.status.live {
+  color: #9ed3ae;
+}
+
+
+/* =========================================================
+   WORKSPACE
+   ========================================================= */
+
+.workspace {
+  max-width: 1440px;
+
+  margin: 0 auto;
+
+  padding: 32px 0 30px;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero-copy {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: end;
+
+  margin-bottom: 30px;
+}
+
+.hero-copy h1 {
+  font-size:
+    clamp(
+      25px,
+      3vw,
+      42px
+    );
+
+  line-height: 1.04;
+
+  margin: 0;
+
+  letter-spacing: -0.055em;
+
+  font-weight: 600;
+}
+
+.hero-copy h1 span {
+  color: #777a81;
+}
+
+.hero-copy p {
+  margin: 11px 0 0;
+
+  color: #81838a;
+
+  font-size: 13px;
+}
+
+
+/* =========================================================
+   HERO CONTROLS
+   ========================================================= */
+
+.hero-controls {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  flex-wrap: nowrap;
+}
+
+.control-button {
+  height: 38px;
+
+  padding: 0 13px;
+
+  border-radius: 999px;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  gap: 7px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+
+  white-space: nowrap;
+
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.control-button:hover {
+  transform:
+    translateY(-1px);
+}
+
+
+/* STOP CAMERA */
+
+.stop-camera-button {
+  background: #18191c;
+
+  border:
+    1px solid
+    #303237;
+
+  color: #d7d8db;
+}
+
+.stop-camera-button:hover {
+  background: #222328;
+
+  border-color: #3a3c41;
+}
+
+
+/* RECORD */
+
+.record-button {
+  background: #18191c;
+
+  border:
+    1px solid
+    #303237;
+
+  color: #d7d8db;
+}
+
+.record-button:hover {
+  background: #222328;
+
+  border-color: #3a3c41;
+}
+
+.record-button.recording {
+  background: #241517;
+
+  border-color: #633238;
+
+  color: #ffb8bd;
+}
+
+.record-button.recording:hover {
+  background: #321a1d;
+
+  border-color: #814149;
+}
+
+
+/* MEDIAPIPE */
+
+.engine-pill {
+  height: 38px;
+
+  font-size: 10px;
+
+  color: #888a90;
+
+  border:
+    1px solid
+    #25272b;
+
+  padding: 0 13px;
+
+  border-radius: 999px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  white-space: nowrap;
+}
+
+.engine-pill span {
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #a7aab0;
+
+  box-shadow:
+    0 0 12px #777;
+}
+
+
+/* =========================================================
+   MAIN GRID
+   ========================================================= */
+
+.main-grid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    310px;
+
+  gap: 18px;
+}
+
+.stage-shell {
+  min-width: 0;
+}
+
+
+/* =========================================================
+   CAMERA
+   ========================================================= */
+
+.camera-stage {
+  position: relative;
+
+  aspect-ratio: 16 / 9;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    #27292d;
+
+  border-radius: 18px;
+
+  background: #101113;
+
+  box-shadow:
+    0 24px 70px
+    rgba(0, 0, 0, 0.3);
+}
+
+.camera-stage video,
+.camera-stage canvas {
+  position: absolute;
+
+  inset: 0;
+
+  width: 100%;
+
+  height: 100%;
+
+  object-fit: cover;
+
+  transform:
+    scaleX(-1);
+}
+
+.camera-stage video {
+  opacity: 0;
+
+  transition:
+    opacity 0.35s ease;
+}
+
+.camera-stage video.visible {
+  opacity: 1;
+}
+
+.camera-stage canvas {
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+.empty-state {
+  position: absolute;
+
+  inset: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  justify-content: center;
+
+  text-align: center;
+
+  padding: 30px;
+}
+
+.empty-icon {
+  width: 54px;
+
+  height: 54px;
+
+  border:
+    1px solid
+    #303238;
+
+  border-radius: 16px;
+
+  display: grid;
+
+  place-items: center;
+
+  color: #c3c5c9;
+
+  background: #151619;
+
+  margin-bottom: 17px;
+}
+
+.empty-state h2 {
+  font-size: 17px;
+
+  margin: 0;
+
+  font-weight: 550;
+
+  letter-spacing: -0.02em;
+}
+
+.empty-state p {
+  font-size: 12px;
+
+  color: #75777e;
+
+  max-width: 340px;
+
+  line-height: 1.6;
+
+  margin: 9px 0 18px;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary,
+.secondary {
+  border: 0;
+
+  border-radius: 999px;
+
+  padding: 11px 16px;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  cursor: pointer;
+
+  transition:
+    0.2s ease;
+}
+
+.primary {
+  background: #f5f5f7;
+
+  color: #0a0a0b;
+}
+
+.primary:hover {
+  background: #fff;
+
+  transform:
+    translateY(-1px);
+}
+
+.secondary {
+  background: #1a1b1e;
+
+  border:
+    1px solid
+    #303237;
+
+  color: #f1f1f3;
+}
+
+.secondary:hover {
+  background: #222328;
+}
+
+.primary:disabled {
+  opacity: 0.5;
+
+  cursor: default;
+
+  transform: none;
+}
+
+
+/* =========================================================
+   CAMERA CHIPS
+   ========================================================= */
+
+.stage-chip {
+  position: absolute;
+
+  top: 15px;
+
+  left: 15px;
+
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(9, 10, 11, 0.75);
+
+  backdrop-filter:
+    blur(12px);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  font-size: 10px;
+
+  color: #d6d7da;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.live-dot {
+  width: 5px;
+
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #9ed3ae;
+
+  box-shadow:
+    0 0 8px
+    rgba(158, 211, 174, 0.7);
+}
+
+
+/* RECORDING CHIP */
+
+.recording-chip {
+  position: absolute;
+
+  top: 15px;
+
+  right: 15px;
+
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  background:
+    rgba(25, 10, 11, 0.82);
+
+  backdrop-filter:
+    blur(12px);
+
+  border:
+    1px solid
+    rgba(255, 90, 100, 0.25);
+
+  color: #ffb8bd;
+
+  font-size: 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+}
+
+.recording-chip span {
+  width: 6px;
+
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: #ff5b64;
+
+  box-shadow:
+    0 0 10px
+    rgba(255, 91, 100, 0.7);
+
+  animation:
+    recordingPulse
+    1.2s
+    ease-in-out
+    infinite;
+}
+
+@keyframes recordingPulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.35;
+  }
+
+}
+
+
+/* =========================================================
+   STAGE ACTIONS
+   ========================================================= */
+
+.stage-actions {
+  height: 57px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 15px;
+}
+
+.privacy-note {
+  font-size: 10px;
+
+  color: #606269;
+}
+
+
+/* =========================================================
+   RIGHT RAIL
+   ========================================================= */
+
+.rail {
+  border:
+    1px solid
+    #222428;
+
+  border-radius: 18px;
+
+  background: #101113;
+
+  padding: 4px;
+
+  min-width: 0;
+}
+
+.rail-section {
+  padding: 19px 17px;
+
+  border-bottom:
+    1px solid
+    #222428;
+}
+
+.rail-section:last-child {
+  border-bottom: 0;
+}
+
+.section-label {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  color: #6d7077;
+
+  font-size: 9px;
+
+  letter-spacing: 0.15em;
+
+  margin-bottom: 14px;
+}
+
+.metric-row {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 7px 0;
+
+  font-size: 12px;
+
+  color: #83858b;
+}
+
+.metric-row span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+.metric-row strong {
+  font-size: 12px;
+
+  color: #e3e4e6;
+
+  font-weight: 550;
+
+  text-align: right;
+
+  max-width: 150px;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   TOGGLES
+   ========================================================= */
+
+.toggle {
+  width: 100%;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  border: 0;
+
+  background: transparent;
+
+  padding: 7px 0;
+
+  color: #9b9da3;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+.switch {
+  width: 29px;
+
+  height: 17px;
+
+  border-radius: 999px;
+
+  background: #282a2e;
+
+  padding: 2px;
+
+  transition:
+    0.2s;
+}
+
+.switch span {
+  display: block;
+
+  width: 13px;
+
+  height: 13px;
+
+  background: #72757b;
+
+  border-radius: 50%;
+
+  transition:
+    0.2s;
+}
+
+.switch.on {
+  background: #dedfe2;
+}
+
+.switch.on span {
+  background: #0b0c0d;
+
+  transform:
+    translateX(12px);
+}
+
+
+/* =========================================================
+   HAND CARDS
+   ========================================================= */
+
+.hand-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 8px 0;
+}
+
+.hand-dot {
+  width: 7px;
+
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #dfe0e2;
+
+  box-shadow:
+    0 0 12px
+    rgba(255, 255, 255, 0.4);
+}
+
+.hand-card div {
+  min-width: 0;
+
+  flex: 1;
+}
+
+.hand-card strong {
+  display: block;
+
+  font-size: 11px;
+
+  font-weight: 550;
+
+  color: #dddfe2;
+}
+
+.hand-card small {
+  display: block;
+
+  color: #6e7178;
+
+  font-size: 9px;
+
+  margin-top: 3px;
+}
+
+.hand-card em {
+  font-style: normal;
+
+  color: #a7a9ae;
+
+  font-size: 10px;
+}
+
+.muted {
+  color: #62656b;
+
+  font-size: 10px;
+
+  line-height: 1.6;
+
+  margin: 0;
+}
+
+
+/* =========================================================
+   BOTTOM BAR
+   ========================================================= */
+
+.bottom-bar {
+  margin-top: 18px;
+
+  border:
+    1px solid
+    #222428;
+
+  background: #101113;
+
+  border-radius: 15px;
+
+  padding: 15px 18px;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+}
+
+.bottom-bar div {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  padding: 0 22px;
+
+  border-right:
+    1px solid
+    #26282c;
+}
+
+.bottom-bar div:first-child {
+  padding-left: 0;
+}
+
+.bottom-bar div:last-child {
+  border: 0;
+
+  padding-right: 0;
+}
+
+.bottom-bar span {
+  font-size: 9px;
+
+  letter-spacing: 0.13em;
+
+  color: #666970;
+}
+
+.bottom-bar strong {
+  font-size: 13px;
+
+  font-weight: 550;
+
+  color: #d9dade;
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+  max-width: 1440px;
+
+  margin: auto;
+
+  min-height: 64px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  color: #4f5157;
+
+  font-size: 9px;
+
+  letter-spacing: 0.13em;
+
+  border-top:
+    1px solid
+    #181a1d;
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1100
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .hero-controls {
+    gap: 6px;
+  }
+
+  .control-button {
+    padding: 0 10px;
+  }
+
+  .engine-pill {
+    padding: 0 10px;
+
+    font-size: 9px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — 950
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+  .app-shell {
+    padding: 0 18px;
+  }
+
+  .workspace {
+    padding-top: 28px;
+  }
+
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rail {
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .rail-section {
+    border-right:
+      1px solid
+      #222428;
+  }
+
+  .rail-section:nth-child(2) {
+    border-right: 0;
+  }
+
+  .rail-section:nth-child(3) {
+    border-bottom: 0;
+  }
+
+  .rail-section:last-child {
+    border-bottom: 0;
+  }
+
+  .hero-copy {
+    align-items: flex-start;
+
+    gap: 20px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — 850
+   ========================================================= */
+
+@media (max-width: 850px) {
+
+  .header-author {
+    font-size: 12px;
+  }
+
+  .brand span {
+    font-size: 25px;
+  }
+
+  .brand small {
+    font-size: 8px;
+  }
+
+  .brand-mark {
+    width: 44px;
+    height: 44px;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — 760
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+  .header-author {
+    display: none;
+  }
+
+  .brand {
+    position: static;
+
+    transform: none;
+
+    margin: auto;
+  }
+
+  .brand-mark {
+    position: static;
+
+    transform: none;
+  }
+
+  .topbar {
+    justify-content: space-between;
+  }
+
+  .hero-copy {
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 18px;
+  }
+
+  .hero-controls {
+    width: 100%;
+
+    justify-content: flex-start;
+
+    flex-wrap: wrap;
+  }
+
+}
+
+
+/* =========================================================
+   RESPONSIVE — 620
+   ========================================================= */
+
+@media (max-width: 620px) {
+
+  .app-shell {
+    padding: 0 12px;
+  }
+
+  .topbar {
+    height: 68px;
+  }
+
+  .brand-mark {
+    width: 36px;
+
+    height: 36px;
+  }
+
+  .brand {
+    gap: 8px;
+  }
+
+  .brand span {
+    font-size: 23px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .header-right {
+    gap: 7px;
+  }
+
+  .header-socials {
+    gap: 2px;
+  }
+
+  .header-social-link {
+    width: 28px;
+
+    height: 28px;
+  }
+
+  .hero-copy h1 {
+    font-size: 28px;
+  }
+
+  .hero-copy p {
+    font-size: 12px;
+  }
+
+  .hero-controls {
+    gap: 6px;
+  }
+
+  .control-button {
+    height: 36px;
+
+    padding: 0 10px;
+
+    font-size: 9px;
+  }
+
+  .engine-pill {
+    height: 36px;
+
+    padding: 0 10px;
+
+    font-size: 8px;
+  }
+
+  .rail {
+    display: block;
+  }
+
+  .rail-section {
+    border-right: 0;
+  }
+
+  .bottom-bar {
+    grid-template-columns:
+      repeat(2, 1fr);
+
+    gap: 14px;
+  }
+
+  .bottom-bar div {
+    padding: 0;
+
+    border-right: 0;
+  }
+
+  .bottom-bar div:nth-child(odd) {
+    padding-left: 0;
+  }
+
+  .bottom-bar div:nth-child(even) {
+    padding-right: 0;
+  }
+
+  .bottom-bar div:last-child {
+    border: 0;
+  }
+
+  .stage-actions {
+    height: auto;
+
+    padding: 12px 0;
+  }
+
+  .privacy-note {
+    font-size: 9px;
+  }
+
+  footer {
+    min-height: 50px;
+  }
+
+}
