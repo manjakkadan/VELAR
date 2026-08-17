@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { FilesetResolver, HandLandmarker } from '@mediapipe/tasks-vision'
-import { recognizeGesture, landmarkBounds } from '../lib/gestureRecognition'
+import {
+  FilesetResolver,
+  HandLandmarker,
+} from '@mediapipe/tasks-vision'
+
+import {
+  recognizeGesture,
+  landmarkBounds,
+} from '../lib/gestureRecognition'
 
 const WASM =
   'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/wasm'
@@ -9,9 +16,11 @@ const MODEL_ASSET_PATH =
   'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
 
 export function useHandTracking(videoRef, canvasRef) {
+
   const landmarkerRef = useRef(null)
   const streamRef = useRef(null)
   const rafRef = useRef(null)
+
   const lastTimeRef = useRef(0)
   const fpsTimesRef = useRef([])
 
@@ -32,18 +41,38 @@ export function useHandTracking(videoRef, canvasRef) {
     labels: true,
   })
 
+
+  /* =========================================================
+     CLEAR CANVAS
+     ========================================================= */
+
   const clearCanvas = useCallback(() => {
+
     const canvas = canvasRef.current
 
     if (!canvas) return
 
     const ctx = canvas.getContext('2d')
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    if (!ctx) return
+
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    )
+
   }, [canvasRef])
+
+
+  /* =========================================================
+     DRAW HAND RESULTS
+     ========================================================= */
 
   const draw = useCallback(
     (results) => {
+
       const canvas = canvasRef.current
       const video = videoRef.current
 
@@ -51,466 +80,1005 @@ export function useHandTracking(videoRef, canvasRef) {
 
       const ctx = canvas.getContext('2d')
 
-      const w = video.videoWidth || 1280
-      const h = video.videoHeight || 720
+      if (!ctx) return
 
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w
-        canvas.height = h
+
+      const width =
+        video.videoWidth || 1280
+
+      const height =
+        video.videoHeight || 720
+
+
+      if (
+        canvas.width !== width ||
+        canvas.height !== height
+      ) {
+
+        canvas.width = width
+        canvas.height = height
+
       }
 
-      ctx.clearRect(0, 0, w, h)
 
-      const connections = HandLandmarker.HAND_CONNECTIONS
+      ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+      )
 
-      const colors = ['#f5f5f7', '#a8b3ff']
 
-      results.landmarks.forEach((lm, i) => {
-        const bounds = landmarkBounds(lm)
-        const gesture = recognizeGesture(lm)
+      if (!results?.landmarks) {
+        return
+      }
 
-        const hand =
-          results.handedness?.[i]?.[0]?.categoryName ||
-          `Hand ${i + 1}`
 
-        const stroke = colors[i % colors.length]
+      const connections =
+        HandLandmarker.HAND_CONNECTIONS
 
-        const px = (x) => x * w
-        const py = (y) => y * h
 
-        /*
-         * ---------------------------------------------------------
-         * BOUNDING BOX
-         * ---------------------------------------------------------
-         */
+      const colors = [
+        '#f5f5f7',
+        '#a8b3ff',
+      ]
 
-        if (settings.boxes) {
-          ctx.strokeStyle = stroke
-          ctx.lineWidth = 1.5
 
-          ctx.strokeRect(
-            px(bounds.x),
-            py(bounds.y),
-            px(bounds.width),
-            py(bounds.height)
-          )
-        }
+      results.landmarks.forEach(
+        (landmarks, index) => {
 
-        /*
-         * ---------------------------------------------------------
-         * HAND SKELETON
-         * ---------------------------------------------------------
-         */
+          const bounds =
+            landmarkBounds(landmarks)
 
-        if (settings.skeleton) {
-          ctx.strokeStyle = stroke
-          ctx.lineWidth = 2
+          const gesture =
+            recognizeGesture(landmarks)
 
-          connections.forEach(({ start, end }) => {
-            const p = lm[start]
-            const q = lm[end]
 
-            if (!p || !q) return
+          const handedness =
+            results.handedness?.[index]?.[0]
 
-            ctx.beginPath()
-            ctx.moveTo(px(p.x), py(p.y))
-            ctx.lineTo(px(q.x), py(q.y))
-            ctx.stroke()
-          })
-        }
 
-        /*
-         * ---------------------------------------------------------
-         * LANDMARKS
-         * ---------------------------------------------------------
-         */
+          const handName =
+            handedness?.displayName ||
+            handedness?.categoryName ||
+            `Hand ${index + 1}`
 
-        if (settings.landmarks) {
-          ctx.fillStyle = stroke
-
-          lm.forEach((p) => {
-            ctx.beginPath()
-            ctx.arc(
-              px(p.x),
-              py(p.y),
-              3.2,
-              0,
-              Math.PI * 2
-            )
-            ctx.fill()
-          })
-        }
-
-        /*
-         * ---------------------------------------------------------
-         * LABEL
-         *
-         * The entire canvas is mirrored with CSS so that the
-         * camera behaves like a normal selfie camera.
-         *
-         * Therefore the label itself is counter-mirrored here
-         * so that the text remains readable.
-         * ---------------------------------------------------------
-         */
-
-        if (settings.labels) {
-          const label = `${hand}  ·  ${gesture.name}`
-
-          ctx.font =
-            '600 14px Inter, system-ui, sans-serif'
-
-          const labelWidth =
-            ctx.measureText(label).width + 20
-
-          const originalX = px(bounds.x)
 
           /*
-           * Position the label at the mirrored bounding-box
-           * location.
+           * MediaPipe handedness confidence.
+           * Value is between 0 and 1.
            */
-          const labelX = Math.max(
-            12,
-            Math.min(
-              w - labelWidth - 12,
-              w - originalX - labelWidth
+
+          const confidence =
+            typeof handedness?.score === 'number'
+              ? handedness.score
+              : 0
+
+
+          const stroke =
+            colors[index % colors.length]
+
+
+          const px =
+            (x) => x * width
+
+          const py =
+            (y) => y * height
+
+
+          /* =================================================
+             BOUNDING BOX
+             ================================================= */
+
+          if (settings.boxes) {
+
+            ctx.strokeStyle = stroke
+            ctx.lineWidth = 1.5
+
+            ctx.strokeRect(
+              px(bounds.x),
+              py(bounds.y),
+              px(bounds.width),
+              py(bounds.height)
             )
-          )
 
-          const labelY = Math.max(
-            30,
-            py(bounds.y) - 10
-          )
+          }
 
-          ctx.save()
 
-          /*
-           * Counter-mirror only the label.
-           */
-          ctx.translate(w, 0)
-          ctx.scale(-1, 1)
+          /* =================================================
+             SKELETON
+             ================================================= */
 
-          ctx.fillStyle = 'rgba(8, 9, 10, .88)'
+          if (settings.skeleton) {
 
-          ctx.beginPath()
-          ctx.roundRect(
-            labelX,
-            labelY - 22,
-            labelWidth,
-            30,
-            9
-          )
-          ctx.fill()
+            ctx.strokeStyle = stroke
+            ctx.lineWidth = 2
 
-          ctx.fillStyle = '#f5f5f7'
+            connections.forEach(
+              ({ start, end }) => {
 
-          ctx.fillText(
-            label,
-            labelX + 10,
-            labelY - 2
-          )
+                const pointA =
+                  landmarks[start]
 
-          ctx.restore()
+                const pointB =
+                  landmarks[end]
+
+
+                if (
+                  !pointA ||
+                  !pointB
+                ) {
+                  return
+                }
+
+
+                ctx.beginPath()
+
+                ctx.moveTo(
+                  px(pointA.x),
+                  py(pointA.y)
+                )
+
+                ctx.lineTo(
+                  px(pointB.x),
+                  py(pointB.y)
+                )
+
+                ctx.stroke()
+
+              }
+            )
+
+          }
+
+
+          /* =================================================
+             LANDMARKS
+             ================================================= */
+
+          if (settings.landmarks) {
+
+            ctx.fillStyle = stroke
+
+            landmarks.forEach(
+              (point) => {
+
+                ctx.beginPath()
+
+                ctx.arc(
+                  px(point.x),
+                  py(point.y),
+                  3.2,
+                  0,
+                  Math.PI * 2
+                )
+
+                ctx.fill()
+
+              }
+            )
+
+          }
+
+
+          /* =================================================
+             LABEL
+             
+             IMPORTANT:
+             The canvas itself is mirrored through CSS.
+             Therefore the label is counter-mirrored here
+             so the text appears normal to the user.
+             ================================================= */
+
+          if (settings.labels) {
+
+            const confidenceText =
+              `${Math.round(
+                confidence * 100
+              )}%`
+
+
+            const label =
+              `${handName}  ·  ${gesture.name}  ·  ${confidenceText}`
+
+
+            ctx.font =
+              '600 14px Inter, system-ui, sans-serif'
+
+
+            const labelWidth =
+              ctx.measureText(label).width + 20
+
+
+            const labelHeight =
+              30
+
+
+            const labelX =
+              Math.max(
+                12,
+                Math.min(
+                  width - labelWidth - 12,
+                  px(bounds.x)
+                )
+              )
+
+
+            const labelY =
+              Math.max(
+                30,
+                py(bounds.y) - 10
+              )
+
+
+            /*
+             * Because the entire canvas is flipped
+             * with CSS, flip ONLY the label back.
+             */
+
+            ctx.save()
+
+
+            ctx.translate(
+              width,
+              0
+            )
+
+            ctx.scale(
+              -1,
+              1
+            )
+
+
+            /*
+             * Convert the original label position
+             * into the counter-mirrored coordinate system.
+             */
+
+            const mirroredX =
+              width -
+              labelX -
+              labelWidth
+
+
+            /* =============================================
+               LABEL BACKGROUND
+               ============================================= */
+
+            ctx.fillStyle =
+              'rgba(8, 9, 10, .88)'
+
+
+            if (
+              typeof ctx.roundRect ===
+              'function'
+            ) {
+
+              ctx.beginPath()
+
+              ctx.roundRect(
+                mirroredX,
+                labelY - 22,
+                labelWidth,
+                labelHeight,
+                9
+              )
+
+              ctx.fill()
+
+            } else {
+
+              ctx.fillRect(
+                mirroredX,
+                labelY - 22,
+                labelWidth,
+                labelHeight
+              )
+
+            }
+
+
+            /* =============================================
+               LABEL TEXT
+               ============================================= */
+
+            ctx.fillStyle =
+              '#f5f5f7'
+
+
+            ctx.fillText(
+              label,
+              mirroredX + 10,
+              labelY - 2
+            )
+
+
+            ctx.restore()
+
+          }
+
         }
-      })
+      )
+
     },
-    [canvasRef, videoRef, settings]
+
+    [
+      canvasRef,
+      videoRef,
+      settings,
+    ]
   )
+
+
+  /* =========================================================
+     DETECTION LOOP
+     ========================================================= */
 
   const loop = useCallback(
     (timestamp) => {
-      const video = videoRef.current
-      const detector = landmarkerRef.current
+
+      const video =
+        videoRef.current
+
+      const detector =
+        landmarkerRef.current
+
 
       if (
         !video ||
         !detector ||
         video.readyState < 2
       ) {
+
         rafRef.current =
           requestAnimationFrame(loop)
 
         return
+
       }
+
 
       /*
        * Limit processing to approximately 40 FPS.
-       * This prevents unnecessary CPU/GPU usage.
        */
+
       if (
-        timestamp - lastTimeRef.current <
+        timestamp -
+          lastTimeRef.current <
         25
       ) {
+
         rafRef.current =
           requestAnimationFrame(loop)
 
         return
+
       }
 
-      lastTimeRef.current = timestamp
 
-      const start = performance.now()
+      lastTimeRef.current =
+        timestamp
 
-      const results =
-        detector.detectForVideo(
-          video,
-          timestamp
+
+      /* =====================================================
+         INFERENCE TIME
+         ===================================================== */
+
+      const inferenceStart =
+        performance.now()
+
+
+      let results
+
+
+      try {
+
+        results =
+          detector.detectForVideo(
+            video,
+            timestamp
+          )
+
+      } catch (detectionError) {
+
+        console.error(
+          'MediaPipe detection error:',
+          detectionError
         )
 
-      const inference =
-        performance.now() - start
+        rafRef.current =
+          requestAnimationFrame(loop)
+
+        return
+
+      }
+
+
+      const inferenceTime =
+        performance.now() -
+        inferenceStart
+
+
+      /* =====================================================
+         DRAW
+         ===================================================== */
 
       draw(results)
 
-      /*
-       * ---------------------------------------------------------
-       * DETECTED HAND DATA
-       * ---------------------------------------------------------
-       */
+
+      /* =====================================================
+         PROCESS HANDS
+         ===================================================== */
 
       const detected =
-        results.landmarks.map((lm, i) => {
-          const gesture =
-            recognizeGesture(lm)
+        (results.landmarks || []).map(
+          (landmarks, index) => {
 
-          return {
-            id: i + 1,
+            const gesture =
+              recognizeGesture(
+                landmarks
+              )
 
-            hand:
-              results.handedness?.[i]?.[0]
-                ?.displayName ||
-              results.handedness?.[i]?.[0]
-                ?.categoryName ||
-              `Hand ${i + 1}`,
 
-            gesture: gesture.name,
+            const handedness =
+              results.handedness?.[index]?.[0]
 
-            confidence:
-              gesture.confidence,
+
+            const handName =
+              handedness?.displayName ||
+              handedness?.categoryName ||
+              `Hand ${index + 1}`
+
+
+            const confidence =
+              typeof handedness?.score === 'number'
+                ? handedness.score
+                : 0
+
+
+            return {
+
+              id:
+                index + 1,
+
+              hand:
+                handName,
+
+              gesture:
+                gesture.name,
+
+              confidence:
+                confidence,
+
+            }
+
           }
-        })
+        )
 
-      setHands(detected)
 
-      /*
-       * ---------------------------------------------------------
-       * FPS
-       * ---------------------------------------------------------
-       */
+      setHands(
+        detected
+      )
 
-      fpsTimesRef.current.push(timestamp)
+
+      /* =====================================================
+         FPS
+         ===================================================== */
+
+      fpsTimesRef.current.push(
+        timestamp
+      )
+
 
       fpsTimesRef.current =
         fpsTimesRef.current.filter(
-          (t) => timestamp - t < 1000
+          (time) =>
+            timestamp - time < 1000
         )
+
 
       const fps =
         fpsTimesRef.current.length
 
-      /*
-       * ---------------------------------------------------------
-       * CONFIDENCE
-       * ---------------------------------------------------------
-       */
 
-      const confidence =
-        detected.length
+      /* =====================================================
+         AVERAGE CONFIDENCE
+         ===================================================== */
+
+      const averageConfidence =
+        detected.length > 0
+
           ? detected.reduce(
-              (sum, hand) =>
-                sum + hand.confidence,
+              (total, hand) =>
+                total +
+                hand.confidence,
               0
             ) / detected.length
+
           : 0
 
+
+      /* =====================================================
+         METRICS
+         ===================================================== */
+
       setMetrics({
-        fps,
-        inference: Math.round(inference),
-        confidence,
+
+        fps:
+
+          fps,
+
+        inference:
+
+          Math.round(
+            inferenceTime
+          ),
+
+        confidence:
+
+          averageConfidence * 100,
+
       })
 
+
       rafRef.current =
         requestAnimationFrame(loop)
+
     },
-    [draw, videoRef]
+
+    [
+      draw,
+      videoRef,
+    ]
   )
 
-  const start = useCallback(async () => {
-    try {
-      setError('')
-      setState('loading')
 
-      /*
-       * Initialize MediaPipe and camera in parallel.
-       */
-      const [vision, stream] =
-        await Promise.all([
-          FilesetResolver.forVisionTasks(WASM),
+  /* =========================================================
+     START CAMERA
+     ========================================================= */
 
-          navigator.mediaDevices.getUserMedia({
-            video: {
-              width: {
-                ideal: 1280,
+  const start = useCallback(
+    async () => {
+
+      try {
+
+        setError('')
+        setState('loading')
+
+
+        /* ===================================================
+           LOAD MEDIAPIPE + CAMERA
+           =================================================== */
+
+        const [
+          vision,
+          stream,
+        ] = await Promise.all([
+
+          FilesetResolver.forVisionTasks(
+            WASM
+          ),
+
+          navigator.mediaDevices.getUserMedia(
+            {
+              video: {
+
+                width: {
+                  ideal: 1280,
+                },
+
+                height: {
+                  ideal: 720,
+                },
+
+                facingMode:
+                  'user',
+
               },
-              height: {
-                ideal: 720,
-              },
-              facingMode: 'user',
-            },
-            audio: false,
-          }),
+
+              audio: false,
+
+            }
+          ),
+
         ])
 
-      const options = {
-        runningMode: 'VIDEO',
 
-        numHands: 2,
+        /* ===================================================
+           MEDIAPIPE OPTIONS
+           =================================================== */
 
-        minHandDetectionConfidence: 0.55,
+        const options = {
 
-        minHandPresenceConfidence: 0.55,
+          runningMode:
+            'VIDEO',
 
-        minTrackingConfidence: 0.55,
-      }
+          numHands:
+            2,
 
-      let detector
+          minHandDetectionConfidence:
+            0.55,
 
-      /*
-       * Try GPU first.
-       */
-      try {
-        detector =
-          await HandLandmarker.createFromOptions(
-            vision,
-            {
-              ...options,
+          minHandPresenceConfidence:
+            0.55,
 
-              baseOptions: {
-                modelAssetPath:
-                  MODEL_ASSET_PATH,
+          minTrackingConfidence:
+            0.55,
 
-                delegate: 'GPU',
-              },
-            }
+        }
+
+
+        let detector
+
+
+        /* ===================================================
+           GPU
+           =================================================== */
+
+        try {
+
+          detector =
+            await HandLandmarker.createFromOptions(
+              vision,
+              {
+
+                ...options,
+
+                baseOptions: {
+
+                  modelAssetPath:
+                    MODEL_ASSET_PATH,
+
+                  delegate:
+                    'GPU',
+
+                },
+
+              }
+            )
+
+        } catch (gpuError) {
+
+          console.warn(
+            'GPU delegate unavailable. Falling back to CPU.',
+            gpuError
           )
-      } catch (gpuError) {
-        /*
-         * Fall back to CPU if GPU initialization
-         * fails.
-         */
-        console.warn(
-          'GPU delegate unavailable; falling back to CPU.',
-          gpuError
+
+
+          /* ================================================
+             CPU FALLBACK
+             ================================================ */
+
+          detector =
+            await HandLandmarker.createFromOptions(
+              vision,
+              {
+
+                ...options,
+
+                baseOptions: {
+
+                  modelAssetPath:
+                    MODEL_ASSET_PATH,
+
+                  delegate:
+                    'CPU',
+
+                },
+
+              }
+            )
+
+        }
+
+
+        landmarkerRef.current =
+          detector
+
+        streamRef.current =
+          stream
+
+
+        /* ===================================================
+           CONNECT CAMERA
+           =================================================== */
+
+        const video =
+          videoRef.current
+
+
+        if (!video) {
+
+          throw new Error(
+            'Video element is unavailable.'
+          )
+
+        }
+
+
+        video.srcObject =
+          stream
+
+
+        await video.play()
+
+
+        /* ===================================================
+           RESET
+           =================================================== */
+
+        lastTimeRef.current =
+          0
+
+        fpsTimesRef.current =
+          []
+
+        setHands([])
+
+        setMetrics({
+
+          fps:
+            0,
+
+          inference:
+            0,
+
+          confidence:
+            0,
+
+        })
+
+
+        /* ===================================================
+           START LOOP
+           =================================================== */
+
+        setState(
+          'running'
         )
 
-        detector =
-          await HandLandmarker.createFromOptions(
-            vision,
-            {
-              ...options,
 
-              baseOptions: {
-                modelAssetPath:
-                  MODEL_ASSET_PATH,
+        rafRef.current =
+          requestAnimationFrame(loop)
 
-                delegate: 'CPU',
-              },
-            }
-          )
-      }
+      } catch (cameraError) {
 
-      landmarkerRef.current =
-        detector
-
-      streamRef.current =
-        stream
-
-      const video =
-        videoRef.current
-
-      if (!video) {
-        throw new Error(
-          'Video element unavailable.'
+        console.error(
+          'Camera / MediaPipe initialization error:',
+          cameraError
         )
+
+
+        streamRef.current
+          ?.getTracks()
+          .forEach(
+            (track) =>
+              track.stop()
+          )
+
+
+        streamRef.current =
+          null
+
+
+        let message =
+          'Could not initialize the camera or hand model.'
+
+
+        if (
+          cameraError?.name ===
+          'NotAllowedError'
+        ) {
+
+          message =
+            'Camera permission was denied. Allow camera access and try again.'
+
+        } else if (
+          cameraError?.name ===
+          'NotFoundError'
+        ) {
+
+          message =
+            'No camera was found. Connect a webcam and try again.'
+
+        } else if (
+          cameraError?.name ===
+          'NotReadableError'
+        ) {
+
+          message =
+            'The camera is already being used by another application.'
+
+        }
+
+
+        setError(
+          message
+        )
+
+        setState(
+          'error'
+        )
+
       }
 
-      video.srcObject = stream
+    },
 
-      await video.play()
+    [
+      loop,
+      videoRef,
+    ]
+  )
 
-      setState('running')
+
+  /* =========================================================
+     STOP CAMERA
+     ========================================================= */
+
+  const stop = useCallback(
+    () => {
+
+      if (rafRef.current) {
+
+        cancelAnimationFrame(
+          rafRef.current
+        )
+
+      }
+
 
       rafRef.current =
-        requestAnimationFrame(loop)
-    } catch (e) {
-      console.error(e)
+        null
+
 
       streamRef.current
         ?.getTracks()
-        .forEach((track) =>
-          track.stop()
+        .forEach(
+          (track) =>
+            track.stop()
         )
 
-      setError(
-        e?.name === 'NotAllowedError'
-          ? 'Camera permission was denied. Allow camera access and try again.'
-          : 'Could not initialize the camera or hand model.'
-      )
 
-      setState('error')
-    }
-  }, [loop, videoRef])
-
-  const stop = useCallback(() => {
-    if (rafRef.current) {
-      cancelAnimationFrame(
-        rafRef.current
-      )
-    }
-
-    rafRef.current = null
-
-    streamRef.current
-      ?.getTracks()
-      .forEach((track) =>
-        track.stop()
-      )
-
-    streamRef.current = null
-
-    if (videoRef.current) {
-      videoRef.current.srcObject =
+      streamRef.current =
         null
-    }
 
-    landmarkerRef.current?.close()
 
-    landmarkerRef.current = null
+      if (videoRef.current) {
 
-    setHands([])
+        videoRef.current.pause()
 
-    setMetrics({
-      fps: 0,
-      inference: 0,
-      confidence: 0,
-    })
+        videoRef.current.srcObject =
+          null
 
-    clearCanvas()
+      }
 
-    setState('idle')
-  }, [clearCanvas, videoRef])
+
+      if (
+        landmarkerRef.current
+      ) {
+
+        try {
+
+          landmarkerRef.current.close()
+
+        } catch (closeError) {
+
+          console.warn(
+            'MediaPipe detector close error:',
+            closeError
+          )
+
+        }
+
+      }
+
+
+      landmarkerRef.current =
+        null
+
+
+      setHands([])
+
+
+      setMetrics({
+
+        fps:
+          0,
+
+        inference:
+          0,
+
+        confidence:
+          0,
+
+      })
+
+
+      fpsTimesRef.current =
+        []
+
+      lastTimeRef.current =
+        0
+
+
+      clearCanvas()
+
+
+      setState(
+        'idle'
+      )
+
+    },
+
+    [
+      clearCanvas,
+      videoRef,
+    ]
+  )
+
+
+  /* =========================================================
+     CLEANUP
+     ========================================================= */
 
   useEffect(() => {
-    return () => stop()
-  }, [stop])
+
+    return () => {
+
+      if (rafRef.current) {
+
+        cancelAnimationFrame(
+          rafRef.current
+        )
+
+      }
+
+
+      streamRef.current
+        ?.getTracks()
+        .forEach(
+          (track) =>
+            track.stop()
+        )
+
+
+      try {
+
+        landmarkerRef.current?.close()
+
+      } catch {
+
+        // Detector already closed.
+
+      }
+
+    }
+
+  }, [])
+
+
+  /* =========================================================
+     RETURN
+     ========================================================= */
 
   return {
+
     state,
+
     error,
+
     hands,
+
     metrics,
+
     settings,
+
     setSettings,
+
     start,
+
     stop,
+
   }
+
 }
