@@ -15,6 +15,15 @@ const WASM =
 const MODEL_ASSET_PATH =
   'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task'
 
+/**
+ * Core hand-tracking hook. Owns the entire MediaPipe lifecycle:
+ * starting/stopping the webcam, running the detection loop, drawing
+ * results onto the canvas, and exposing live state (hands, FPS,
+ * inference time, confidence) back to the UI.
+ *
+ * @param videoRef  ref to the <video> element showing the webcam feed
+ * @param canvasRef ref to the <canvas> element used for overlay drawing
+ */
 export function useHandTracking(videoRef, canvasRef) {
 
   const landmarkerRef = useRef(null)
@@ -68,6 +77,14 @@ export function useHandTracking(videoRef, canvasRef) {
 
   /* =========================================================
      DRAW HAND RESULTS
+
+     Renders bounding boxes, skeleton lines, landmark dots, and
+     labels for every detected hand onto the canvas, based on
+     the current toggle settings (settings.boxes/skeleton/etc).
+
+     Runs once per detection frame. Resizes the canvas to match
+     the video's native resolution before drawing, so overlays
+     stay pixel-aligned regardless of display size.
      ========================================================= */
 
   const draw = useCallback(
@@ -263,11 +280,18 @@ export function useHandTracking(videoRef, canvasRef) {
 
           /* =================================================
              LABEL
-             
-             IMPORTANT:
-             The canvas itself is mirrored through CSS.
-             Therefore the label is counter-mirrored here
-             so the text appears normal to the user.
+
+             IMPORTANT — mirrored camera fix:
+             The <video>/<canvas> pair is flipped horizontally via
+             CSS (scaleX(-1)) so the feed behaves like a mirror,
+             which feels natural to the user. That same CSS flip
+             would also flip any TEXT drawn on the canvas, making
+             labels render backwards.
+
+             Fix: apply an equal-and-opposite flip (ctx.scale(-1,1))
+             just for the label block, cancelling out the CSS mirror
+             so the text reads normally. Boxes/skeleton/dots are left
+             mirrored on purpose — only the label needs this correction.
              ================================================= */
 
           if (settings.labels) {
@@ -412,6 +436,12 @@ export function useHandTracking(videoRef, canvasRef) {
 
   /* =========================================================
      DETECTION LOOP
+
+     Runs continuously via requestAnimationFrame while the camera
+     is active. Each pass: throttles to ~40fps, runs MediaPipe
+     inference on the current video frame, draws the results,
+     converts raw landmarks into simplified hand summaries for
+     the UI, and updates FPS/inference/confidence metrics.
      ========================================================= */
 
   const loop = useCallback(
@@ -635,6 +665,15 @@ export function useHandTracking(videoRef, canvasRef) {
 
   /* =========================================================
      START CAMERA
+
+     Requests webcam access and loads the MediaPipe model in
+     parallel, then attempts GPU-accelerated inference first.
+     If GPU delegation fails (unsupported hardware/browser), it
+     transparently falls back to CPU so the app still works —
+     see the try/catch around HandLandmarker.createFromOptions.
+
+     On any failure, maps the browser's raw error name (e.g.
+     NotAllowedError) to a human-readable message for the UI.
      ========================================================= */
 
   const start = useCallback(
@@ -913,6 +952,12 @@ export function useHandTracking(videoRef, canvasRef) {
 
   /* =========================================================
      STOP CAMERA
+
+     Reverses everything start() set up: cancels the animation
+     frame loop, stops all camera tracks, detaches the video
+     stream, closes the MediaPipe detector, resets metrics/state,
+     and clears the canvas. Called both by the user's Stop button
+     and by the cleanup effect below on unmount.
      ========================================================= */
 
   const stop = useCallback(
