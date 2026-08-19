@@ -74,7 +74,6 @@ VELAR/
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── components/
 │   │   ├── hooks/
 │   │   │   └── useHandTracking.js
 │   │   ├── lib/
