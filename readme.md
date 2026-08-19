@@ -66,7 +66,6 @@ The application uses **MediaPipe Hand Landmarker** for real-time hand tracking d
 VELAR/
 │
 ├── backend/
-│   ├── .env
 │   ├── app/
 │   │   ├── __pycache__/
 │   │   └── main.py
