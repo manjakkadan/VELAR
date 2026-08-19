@@ -646,37 +646,31 @@ For the frontend, Vite can similarly use another available port.
 
 ---
 
-# AI Tools Used
+## AI Tools Used
 
-## MediaPipe Hand Landmarker
+### 1. Claude
 
-MediaPipe Hand Landmarker is the primary computer-vision component used by VELAR.
+Used for logic and problem-solving — working through the hand-tracking approach
+and gesture-recognition logic, structuring the detection pipeline, debugging
+issues, and drafting documentation.
 
-It provides:
+### 2. ChatGPT
 
-* Hand detection
-* 21 hand landmarks
-* Hand tracking
-* Handedness classification
-* Real-time inference
+Used for code generation and implementation — writing and refining React
+components, MediaPipe integration code, error handling, and UI/responsive
+styling.
 
-The MediaPipe model runs as part of the browser-based frontend.
+### Validating AI Output
 
-## AI-Assisted Development
+One example: the initial AI-generated camera/canvas rendering caused a mirrored
+mismatch between the displayed video feed and the drawn landmarks. I diagnosed
+the root cause — the coordinate flip wasn't applied consistently — and worked
+with Claude to implement the fix.
 
-AI tools were used as development assistants during implementation for:
+### AI-Assisted Development
 
-* React application structure
-* UI development
-* MediaPipe integration
-* Debugging JavaScript errors
-* Hand-tracking logic
-* Responsive styling
-* Recording functionality
-* Error handling
-* Documentation
-
-The generated suggestions were tested, integrated, and modified during development.
+Both tools were used as assistants during implementation. Suggestions were
+tested and modified before being integrated into the final application.
 
 ---
 
