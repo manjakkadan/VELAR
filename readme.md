@@ -665,6 +665,12 @@ mismatch between the displayed video feed and the drawn landmarks. I diagnosed
 the root cause — the coordinate flip wasn't applied consistently — and worked
 with Claude to implement the fix.
 
+A second example: the per-hand confidence value in the Tracking panel was
+displaying incorrectly as "1%" instead of the correct percentage (e.g. 99%),
+while the same value rendered correctly elsewhere in the UI. I traced this to
+the value being rounded before being multiplied by 100, rather than after,
+and corrected the calculation.
+
 ### AI-Assisted Development
 
 Both tools were used as assistants during implementation. Suggestions were
